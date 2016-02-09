@@ -1,27 +1,30 @@
 package api
 
 import (
-	"encoding/json"
+	"github.com/ant0ine/go-json-rest/rest"
+	"log"
 	"net/http"
-	"time"
+
+	"repositories"
 )
 
 func init() {
-	http.HandleFunc("/", handler)
+	api := rest.NewApi()
+	api.Use(rest.DefaultDevStack...)
+	router, err := rest.MakeRouter(
+		rest.Get("/posts/:slug", GetPost),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	api.SetApp(router)
+
+	http.Handle("/", api.MakeHandler())
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	post := Post{}
+func GetPost(w rest.ResponseWriter, r *rest.Request) {
+	slug := r.PathParam("slug")
+	post := repositories.Get(slug)
 
-	json.NewEncoder(w).Encode(post)
-}
-
-type Post struct {
-	Id        uint32    `json:"id"`
-	Title     string    `json:"title"`
-	Slug      string    `json:"slug"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"createdAt"`
-	PostedAt  time.Time `json:"postedAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	w.WriteJson(post)
 }
