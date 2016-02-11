@@ -1,14 +1,16 @@
 package controllers
 
 import (
-	"encoding/json"
-	"github.com/julienschmidt/httprouter"
-	"net/http"
 	"repositories"
+
+	"encoding/json"
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func IndexPosts(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	response, err := json.Marshal(repositories.Index())
+	response, err := json.Marshal(repositories.IndexPosts())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -20,7 +22,7 @@ func IndexPosts(w http.ResponseWriter, r *http.Request, params httprouter.Params
 
 func GetPost(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	slug := params.ByName("slug")
-	post := repositories.Get(slug)
+	post := repositories.GetPost(slug)
 
 	response, err := json.Marshal(post)
 	if err != nil {
