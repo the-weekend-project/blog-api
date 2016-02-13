@@ -5,10 +5,9 @@ import (
 )
 
 type Comment struct {
-	Content   string    `json:"content"`
+	Content   string    `datastore:",noindex" json:"content"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Author    User      `json:"user"`
-	Category  Category  `json:"category"`
-	Replies   []Comment `json:"replies"`
+	Author    User      `datastore:",noindex" json:"user"`
+	Replies   []Comment `datastore:",noindex" json:"replies"`
 }

@@ -7,7 +7,7 @@ import (
 type SummarizedPost struct {
 	Title      string    `json:"title"`
 	Slug       string    `json:"slug"`
-	Summary    string    `json:"summary"`
+	Summary    string    `datastore:",noindex" json:"summary"`
 	CreatedAt  time.Time `json:"createdAt"`
 	PostedAt   time.Time `json:"postedAt"`
 	UpdatedAt  time.Time `json:"updatedAt"`

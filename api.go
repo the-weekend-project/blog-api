@@ -14,6 +14,7 @@ func init() {
 	router.GET("/posts", controllers.IndexPosts)
 	router.GET("/posts/:slug", controllers.GetPost)
 
+	router.GET("/authors", controllers.IndexAuthors)
 	router.GET("/users/:username", controllers.GetUser)
 	router.PUT("/users/:username", controllers.StoreUser)
 
