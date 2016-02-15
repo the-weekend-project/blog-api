@@ -14,27 +14,31 @@ const (
 
 // Gets all users above and including the given level
 // Will need to be refactored if it might ever return more than a 100 results
-func GetUsersAboveLevel(level int8, ctx context.Context) ([]models.User, error) {
+func GetUsersAboveLevel(ctx context.Context, level int8) ([]models.User, error) {
 	q := datastore.NewQuery(kind).Filter("Level >=", level).Limit(100)
 	var users []models.User
-	_, err := q.GetAll(ctx, &users)
+	keys, err := q.GetAll(ctx, &users)
+
+	if err == nil {
+		for i := range users {
+			users[i].Username = keys[i].StringID()
+		}
+	}
 
 	return users, err
 }
 
 // Gets the user with the given username
-func GetUser(username string, ctx context.Context) (models.User, error) {
-	var user models.User
-	key := getUserKey(username, ctx)
-	err := datastore.Get(ctx, key, &user)
-	user.Username = key.StringID()
+func GetUser(ctx context.Context, user *models.User) error {
+	key := getUserKey(ctx, user.Username)
+	err := datastore.Get(ctx, key, user)
 
-	return user, err
+	return err
 }
 
 // Persists the user to the datastore
-func StoreUser(user *models.User, ctx context.Context) error {
-	key := getUserKey(user.Username, ctx)
+func StoreUser(ctx context.Context, user *models.User) error {
+	key := getUserKey(ctx, user.Username)
 	var err error
 	user.Password, err = bcrypt.GenerateFromPassword(user.Password, bcrypt.DefaultCost)
 	_, err = datastore.Put(ctx, key, user)
@@ -42,7 +46,7 @@ func StoreUser(user *models.User, ctx context.Context) error {
 }
 
 // Helper function to get the key for the User entities with the given username
-func getUserKey(username string, ctx context.Context) *datastore.Key {
+func getUserKey(ctx context.Context, username string) *datastore.Key {
 	return datastore.NewKey(
 		ctx,
 		kind,
