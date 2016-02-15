@@ -63,11 +63,11 @@ func StoreUser(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	level, err := strconv.ParseInt(r.FormValue("level"), 10, 8)
 
 	user := &models.User{
-		Username: username, 
-		FirstName: r.FormValue("firstName"), 
-		LastName: r.FormValue("lastName"), 
-		Email: r.FormValue("email"), 
-		Level: int8(level),
+		Username:  username,
+		FirstName: r.FormValue("firstName"),
+		LastName:  r.FormValue("lastName"),
+		Email:     r.FormValue("email"),
+		Level:     int8(level),
 	}
 	err = repositories.StoreUser(user, ctx)
 

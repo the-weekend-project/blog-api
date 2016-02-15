@@ -3,12 +3,13 @@ package repositories
 import (
 	"github.com/the-weekend-project/blogApi/models"
 
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
 )
 
 const (
-	kind string = "User" 
+	kind string = "User"
 )
 
 // Gets all users above and including the given level
@@ -26,6 +27,7 @@ func GetUser(username string, ctx context.Context) (models.User, error) {
 	var user models.User
 	key := getUserKey(username, ctx)
 	err := datastore.Get(ctx, key, &user)
+	user.Username = key.StringID()
 
 	return user, err
 }
@@ -33,7 +35,9 @@ func GetUser(username string, ctx context.Context) (models.User, error) {
 // Persists the user to the datastore
 func StoreUser(user *models.User, ctx context.Context) error {
 	key := getUserKey(user.Username, ctx)
-	_, err := datastore.Put(ctx, key, user)
+	var err error
+	user.Password, err = bcrypt.GenerateFromPassword(user.Password, bcrypt.DefaultCost)
+	_, err = datastore.Put(ctx, key, user)
 	return err
 }
 
