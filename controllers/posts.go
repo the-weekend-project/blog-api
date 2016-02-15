@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"repositories"
+	"github.com/the-weekend-project/blogApi/repositories"
 
 	"encoding/json"
 	"net/http"

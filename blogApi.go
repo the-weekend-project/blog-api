@@ -1,14 +1,12 @@
-package api
+package blogApi
 
 import (
-	"controllers"
-
-	"net/http"
+	"github.com/the-weekend-project/blogApi/controllers"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-func init() {
+func GetRouter() *httprouter.Router {
 	router := httprouter.New()
 
 	router.GET("/posts", controllers.IndexPosts)
@@ -18,5 +16,5 @@ func init() {
 	router.GET("/users/:username", controllers.GetUser)
 	router.PUT("/users/:username", controllers.StoreUser)
 
-	http.Handle("/", router)
+	return router
 }

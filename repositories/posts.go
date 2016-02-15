@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"models"
+	"github.com/the-weekend-project/blogApi/models"
 
 	"golang.org/x/net/context"
 )

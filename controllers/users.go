@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"models"
-	"repositories"
+	"github.com/the-weekend-project/blogApi/models"
+	"github.com/the-weekend-project/blogApi/repositories"
 
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/appengine"
@@ -53,12 +54,21 @@ func StoreUser(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 	username := params.ByName("username")
 	ctx := appengine.NewContext(r)
 
-	user, err := repositories.GetUser(username, ctx)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	_, err := repositories.GetUser(username, ctx)
+	if err == nil {
+		http.Error(w, "Username already exists!", http.StatusConflict)
 		return
 	}
 
+	level, err := strconv.ParseInt(r.FormValue("level"), 10, 8)
+
+	user := &models.User{
+		Username: username, 
+		FirstName: r.FormValue("firstName"), 
+		LastName: r.FormValue("lastName"), 
+		Email: r.FormValue("email"), 
+		Level: int8(level),
+	}
 	err = repositories.StoreUser(user, ctx)
 
 	if err != nil {
@@ -68,4 +78,12 @@ func StoreUser(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+
+	response, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(response)
 }
